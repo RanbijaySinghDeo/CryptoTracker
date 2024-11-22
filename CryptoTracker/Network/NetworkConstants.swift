@@ -9,5 +9,5 @@ import Foundation
 
 struct NetworkConstants {
     static let baseURL = "https://api.coinranking.com/v2/"
-    static let apiKey = "YOUR_API_KEY_HERE" // Replace with your actual key
+    static let apiKey = "coinranking0ae7f164d65baa41289d782fda076ab7fb0a965a5ea8c6de"
 }

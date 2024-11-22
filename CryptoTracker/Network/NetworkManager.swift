@@ -18,7 +18,9 @@ class NetworkManager {
             completion(.failure(NSError(domain: "Invalid URL", code: -1, userInfo: nil)))
             return
         }
-        
+        print("URL=======\(url)")
+        print("API Key=======\(NetworkConstants.apiKey)")
+
         var request = URLRequest(url: url)
         request.setValue("Bearer \(NetworkConstants.apiKey)", forHTTPHeaderField: "Authorization")
         
@@ -36,7 +38,6 @@ class NetworkManager {
             do {
                 let decoder = JSONDecoder()
                 let response = try decoder.decode(Crypto.self, from: data)
-//                print("Data from service as coin =====> \(response.data?.coins ?? [])")
                 completion(.success(response.data?.coins ?? []))
             } catch {
                 completion(.failure(error))

@@ -16,18 +16,11 @@ class CryptoCell: UITableViewCell {
     @IBOutlet weak var cryptoIconImage: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var cryptoChangeLabel: UILabel!
-    
     @IBOutlet weak var symbolLabel: UILabel!
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
          super.init(style: style, reuseIdentifier: reuseIdentifier)
      }
-
      required init?(coder: NSCoder) {
-         // Provide a default implementation
          super.init(coder: coder)
      }
-
-    func configure(with coin: Coin, isFavorite: Bool) {
-            favIconImage.isHidden = !isFavorite
-        }
 }
