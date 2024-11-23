@@ -14,15 +14,18 @@ protocol CryptoViewModelDelegate: AnyObject {
 
 class DashboardViewModel {
     weak var delegate: CryptoViewModelDelegate?
+    private let networkService: NetworkService
     private(set) var allCoins: [Coin] = []
-    private(set) var favoriteCoins: [Coin] = []
+    var favoriteCoins: [Coin] = []
     private(set) var filteredCoins: [Coin] = []
     private var currentPage = 0
     private var isLoading = false
     
     var didUpdateCoins: (() -> Void)?
     var didEncounterError: ((String) -> Void)?
-    
+    init(networkService: NetworkService = NetworkManager.shared) {
+        self.networkService = networkService
+    }
     func fetchCoins() {
         guard !isLoading else { return }
         isLoading = true
@@ -46,8 +49,6 @@ class DashboardViewModel {
             }
         }
     }
-    
-    
     
     func filterCoins(by segmentIndex: Int) {
         switch segmentIndex {
@@ -73,5 +74,15 @@ class DashboardViewModel {
             favoriteCoins.append(coin)
             return true
         }
+    }
+    
+    func addFavorite(_ coin: Coin) {
+        if !favoriteCoins.contains(where: { $0.uuid == coin.uuid }) {
+            favoriteCoins.append(coin)
+        }
+    }
+    
+    func removeFavorite(_ coin: Coin) {
+        favoriteCoins.removeAll { $0.uuid == coin.uuid }
     }
 }
