@@ -15,10 +15,10 @@ protocol CryptoViewModelDelegate: AnyObject {
 class DashboardViewModel {
     weak var delegate: CryptoViewModelDelegate?
     private let networkService: NetworkService
-    private(set) var allCoins: [Coin] = []
+    var allCoins: [Coin] = []
     var favoriteCoins: [Coin] = []
     private(set) var filteredCoins: [Coin] = []
-    private var currentPage = 0
+    var currentPage = 0
     private var isLoading = false
     
     var didUpdateCoins: (() -> Void)?

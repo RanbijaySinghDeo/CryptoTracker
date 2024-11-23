@@ -9,22 +9,15 @@ import Foundation
 @testable import CryptoTracker
 
 class MockNetworkService: NetworkService {
-    func fetchCoinHistory(uuid: String, timePeriod: String, completion: @escaping (Result<CryptoTracker.CoinHistoryResponse, any Error>) -> Void) {
-        
-    }
-    
-    func fetchCoinDetails(uuid: String, completion: @escaping (Result<CryptoTracker.DetailsCryptoCoinDetailsResponse, any Error>) -> Void) {
-        
-    }
-    
-    var coinsToReturn: [Coin] = []
-    var errorToReturn: Error?
+    var fetchCoinsResult: Result<[Coin], Error>?
     
     func fetchCryptocurrencies(page: Int, completion: @escaping (Result<[Coin], Error>) -> Void) {
-        if let error = errorToReturn {
-            completion(.failure(error))
-        } else {
-            completion(.success(coinsToReturn))
+        if let result = fetchCoinsResult {
+            completion(result)
         }
     }
+    
+    func fetchCoinHistory(uuid: String, timePeriod: String, completion: @escaping (Result<CoinHistoryResponse, Error>) -> Void) {}
+    func fetchCoinDetails(uuid: String, completion: @escaping (Result<DetailsCryptoCoinDetailsResponse, Error>) -> Void) {}
 }
+

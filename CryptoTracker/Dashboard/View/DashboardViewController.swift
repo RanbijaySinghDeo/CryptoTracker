@@ -29,9 +29,16 @@ class DashboardViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        navigationItem.title = Constants.dashboardTitle
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationController?.navigationBar.backgroundColor = ColorUtility.backgroundColor
+        navigationItem.backButtonTitle = ""
+        let appearance = UINavigationBarAppearance()
+        appearance.backgroundColor = ColorUtility.backgroundColor
+        appearance.shadowColor = nil
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
+        navigationController?.navigationBar.isTranslucent = false
     }
     
     private func setupTableView() {

@@ -31,6 +31,12 @@ class DetailsViewController: UIViewController {
     @IBOutlet weak var circulatingValueLabel: UILabel!
     @IBOutlet weak var aboutDecsLabel: UILabel!
     @IBOutlet weak var descriptionView: UIView!
+    @IBOutlet weak var resourcesView: UIView!
+    @IBOutlet weak var resourcesLabel: UILabel!
+    @IBOutlet weak var resourcesTextView: UITextView!
+    @IBOutlet weak var bottonDescriptionTextView: UITextView!
+    @IBOutlet weak var bottomDescriptionLabel: UILabel!
+    @IBOutlet weak var bottomDescriptionView: UIView!
     var coin: Coin!
     var isFavorite: Bool = false
     var onFavoriteToggle: ((Coin, Bool) -> Void)?
@@ -46,7 +52,6 @@ class DetailsViewController: UIViewController {
         initializeViewModel()
         bindViewModel()
         updateUIWithCoinData()
-        
         viewModel.fetchGraphData(for: Constants.Graph.defaultTimePeriod)
     }
     
@@ -121,11 +126,19 @@ class DetailsViewController: UIViewController {
         }
         
         aboutDecsLabel.text = "\(Constants.Labels.about) \(coin.name ?? "")"
-        
-        descriptionView.translatesAutoresizingMaskIntoConstraints = false
-        descriptionView.backgroundColor = UIColor(red: 48/255, green: 55/255, blue: 67/255, alpha: 0.8)
-        descriptionView.layer.cornerRadius = 12
-        descriptionView.layer.masksToBounds = true
+        bottonDescriptionTextView.text = coinDetails.data?.coin?.description
+        guard let links = coinDetails.data?.coin?.links else {
+            resourcesTextView.text = "No links available."
+                    return
+                }
+                
+                let urls = links.compactMap { $0.url }
+                
+                let urlsText = urls.joined(separator: "\n")
+                
+        resourcesTextView.text = urlsText
+        resourcesTextView.isEditable = false
+        resourcesTextView.textColor = .blue
         
     }
     
@@ -147,7 +160,6 @@ class DetailsViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        navigationItem.title = coin.name
         navigationController?.navigationBar.prefersLargeTitles = false
         favButton.image = UIImage(systemName: isFavorite ? "star.fill" : "star")
         favButton.tintColor = .systemYellow
@@ -156,6 +168,13 @@ class DetailsViewController: UIViewController {
         navigationItem.rightBarButtonItem = favButton
         navigationController?.navigationBar.tintColor = .white
         navigationItem.backButtonTitle = ""
+        let appearance = UINavigationBarAppearance()
+        appearance.backgroundColor = UIColor(red: 37/255, green: 47/255, blue: 62/255, alpha: 1)
+        appearance.shadowColor = nil
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
+        navigationController?.navigationBar.isTranslucent = false
     }
     
     private func setupUI() {
@@ -181,6 +200,27 @@ class DetailsViewController: UIViewController {
         ]
         cryptoChangeSegment.setTitleTextAttributes(unselectedAttributes, for: .normal)
         cryptoChangeSegment.setTitleTextAttributes(selectedAttributes, for: .selected)
+        
+        descriptionView.translatesAutoresizingMaskIntoConstraints = false
+        descriptionView.backgroundColor = UIColor(red: 48/255, green: 55/255, blue: 67/255, alpha: 0.8)
+        descriptionView.layer.cornerRadius = 12
+        descriptionView.layer.masksToBounds = true
+        
+        
+        resourcesView.translatesAutoresizingMaskIntoConstraints = false
+        resourcesView.backgroundColor = UIColor(red: 48/255, green: 55/255, blue: 67/255, alpha: 0.8)
+        resourcesView.layer.cornerRadius = 12
+        resourcesView.layer.masksToBounds = true
+        
+        resourcesTextView.backgroundColor = UIColor(red: 48/255, green: 55/255, blue: 67/255, alpha: 0.8)
+        
+        
+        bottomDescriptionView.translatesAutoresizingMaskIntoConstraints = false
+        bottomDescriptionView.backgroundColor = UIColor(red: 48/255, green: 55/255, blue: 67/255, alpha: 0.8)
+        bottomDescriptionView.layer.cornerRadius = 12
+        bottomDescriptionView.layer.masksToBounds = true
+        
+        bottonDescriptionTextView.backgroundColor = UIColor(red: 48/255, green: 55/255, blue: 67/255, alpha: 0.8)
     }
     
     private func drawGraph() {
@@ -191,7 +231,7 @@ class DetailsViewController: UIViewController {
         let maxPrice = points.max() ?? 0.0
         let minPrice = points.min() ?? 0.0
         let graphBackground = UIView(frame: cryptoChangeGraphMainView.bounds)
-        graphBackground.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
+        graphBackground.backgroundColor = UIColor(red: 48/255, green: 55/255, blue: 67/255, alpha: 0.9)
         graphBackground.layer.cornerRadius = 10
         graphBackground.clipsToBounds = true
         cryptoChangeGraphMainView.addSubview(graphBackground)
@@ -226,7 +266,7 @@ class DetailsViewController: UIViewController {
         graphLayer.path = path.cgPath
         graphLayer.strokeColor = viewModel.graphColor().cgColor
         graphLayer.fillColor = UIColor.clear.cgColor
-        graphLayer.lineWidth = 1.5 // Thinner line
+        graphLayer.lineWidth = 1.5
         graphBackground.layer.addSublayer(graphLayer)
     }
     

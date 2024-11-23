@@ -27,7 +27,7 @@ struct DataClass: Codable {
 }
 
 // MARK: - Coin
-struct Coin: Codable {
+struct Coin: Codable, Equatable {
     var uuid, symbol, name, color: String?
     var iconURL: String?
     var marketCap, price: String?
@@ -38,7 +38,7 @@ struct Coin: Codable {
     var lowVolume: Bool?
     var coinrankingURL: String?
     var the24HVolume, btcPrice: String?
-
+    
     enum CodingKeys: String, CodingKey {
         case uuid, symbol, name, color
         case iconURL = "iconUrl"
@@ -46,6 +46,9 @@ struct Coin: Codable {
         case coinrankingURL
         case the24HVolume
         case btcPrice
+    }
+    static func == (lhs: Coin, rhs: Coin) -> Bool {
+        return lhs.uuid == rhs.uuid
     }
 }
 

@@ -13,21 +13,15 @@ protocol NetworkService {
     func fetchCoinDetails(uuid: String, completion: @escaping (Result<DetailsCryptoCoinDetailsResponse, Error>) -> Void)
 }
 
-
 class NetworkManager: NetworkService {
     static var shared = NetworkManager()
-    
     private init() {}
-    
     func fetchCryptocurrencies(page: Int, completion: @escaping (Result<[Coin], Error>) -> Void) {
         let urlString = "\(NetworkConstants.baseURL)coins?limit=20&offset=\(page * 20)"
         guard let url = URL(string: urlString) else {
             completion(.failure(NSError(domain: "Invalid URL", code: -1, userInfo: nil)))
             return
         }
-        print("URL=======\(url)")
-        print("API Key=======\(NetworkConstants.apiKey)")
-        
         var request = URLRequest(url: url)
         request.setValue("Bearer \(NetworkConstants.apiKey)", forHTTPHeaderField: "Authorization")
         
@@ -42,7 +36,7 @@ class NetworkManager: NetworkService {
                 return
             }
             let responseDataString = String(data: data, encoding: .utf8)
-                print("Inq Response Data: \(responseDataString)")
+            print("Inq Response Data: \(String(describing: responseDataString))")
             
             do {
                 print("Inquiry Response Data: \(data)")
@@ -53,11 +47,10 @@ class NetworkManager: NetworkService {
                 completion(.failure(error))
             }
         }
-        
         task.resume()
     }
     func fetchCoinDetails(uuid: String, completion: @escaping (Result<DetailsCryptoCoinDetailsResponse, Error>) -> Void) {
-        let urlString = "https://api.coinranking.com/v2/coin/\(uuid)"
+        let urlString = "\(NetworkConstants.baseURL)coin/\(uuid)"
         guard let url = URL(string: urlString) else {
             completion(.failure(NSError(domain: "Invalid URL", code: -1, userInfo: nil)))
             return
