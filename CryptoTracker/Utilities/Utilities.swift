@@ -30,6 +30,7 @@ class Utility {
     static let shared = Utility()
     private init() {}
     private var activityIndicator: UIActivityIndicatorView?
+    private static var loaderBackgroundView: UIView?
 
     func showToast(message: String, view: UIView) {
         let toastLabel = PaddedLabel()
@@ -61,22 +62,39 @@ class Utility {
         }
     }
     
-    func showLoader(on view: UIView) {
-            if activityIndicator == nil {
-                activityIndicator = UIActivityIndicatorView(style: .large)
-                activityIndicator?.center = view.center
-                activityIndicator?.hidesWhenStopped = true
-                view.addSubview(activityIndicator!)
+    static func showLoader(on view: UIView) {
+            if loaderBackgroundView == nil {
+                loaderBackgroundView = UIView(frame: view.bounds)
+                loaderBackgroundView?.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+                let loaderContainer = UIView(frame: CGRect(x: 0, y: 0, width: 120, height: 120))
+                loaderContainer.center = loaderBackgroundView!.center
+                loaderContainer.backgroundColor = .white
+                loaderContainer.layer.cornerRadius = 10
+                loaderContainer.clipsToBounds = true
+                
+                let activityIndicator = UIActivityIndicatorView(style: .large)
+                activityIndicator.color = .gray
+                activityIndicator.center = CGPoint(x: loaderContainer.bounds.midX, y: loaderContainer.bounds.midY)
+                activityIndicator.startAnimating()
+                loaderContainer.addSubview(activityIndicator)
+                loaderBackgroundView?.addSubview(loaderContainer)
+                view.addSubview(loaderBackgroundView!)
             }
-            
-            activityIndicator?.startAnimating()
-            activityIndicator?.isHidden = false
-            view.bringSubviewToFront(activityIndicator!)
+            loaderBackgroundView?.isHidden = false
+            view.bringSubviewToFront(loaderBackgroundView!)
         }
-        
-        func hideLoader() {
-            activityIndicator?.stopAnimating()
-            activityIndicator?.isHidden = true
-        }
+
+    static func hideLoader() {
+        loaderBackgroundView?.removeFromSuperview()
+        loaderBackgroundView = nil
+    }
     
+    static func showPopup(on viewController: UIViewController, title: String, message: String, buttonTitle: String = "OK", completion: (() -> Void)? = nil) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: buttonTitle, style: .default) { _ in
+            completion?()
+        }
+        alertController.addAction(okAction)
+        viewController.present(alertController, animated: true, completion: nil)
+    }
 }
