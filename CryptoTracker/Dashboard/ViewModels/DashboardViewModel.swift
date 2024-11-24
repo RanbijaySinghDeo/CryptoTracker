@@ -19,7 +19,7 @@ class DashboardViewModel {
     var favoriteCoins: [Coin] = []
     private(set) var filteredCoins: [Coin] = []
     var currentPage = 0
-    private var isLoading = false
+    var isLoading = false
     
     var didUpdateCoins: (() -> Void)?
     var didEncounterError: ((String) -> Void)?

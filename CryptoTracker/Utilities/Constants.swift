@@ -24,6 +24,10 @@ struct Constants {
             static let about = "About"
             static let high = "High: "
             static let low = "Low: "
+        static let unfavorite = "Unfavorite"
+        static let favorite = "Favorite"
+        static let addTo = "Add to"
+        static let removeFrom = "Remove from"
         }
         
         struct Placeholders {
@@ -38,4 +42,15 @@ struct Constants {
         struct Navigation {
             static let backButtonTitle = ""
         }
+    struct FontName {
+        static let regular = "HelveticaNeue"
+        static let bold = "HelveticaNeue-Bold"
+    }
+    
+    struct ImageName {
+        static let star = "star"
+    }
+    struct ControllerIdentifier {
+        static let detailsViewController = "DetailsViewController"
+    }
 }

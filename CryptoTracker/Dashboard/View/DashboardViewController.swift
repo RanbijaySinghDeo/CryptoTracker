@@ -15,10 +15,12 @@ class DashboardViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        Utility.showLoader(on: self.cryptoTableView)
         setupUI()
         bindViewModel()
         viewModel.delegate = self
         viewModel.fetchCoins()
+        Utility.hideLoader()
     }
     
     private func setupUI() {
@@ -117,7 +119,7 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
         
         if let changeString = coin.change, let change = Double(changeString) {
             cell.cryptoChangeLabel.text = "\(String(format: "%.1f", change))%"
-            cell.cryptoChangeLabel.textColor = change < 0 ? .red : UIColor(red: 124/255, green: 184/255, blue: 32/255, alpha: 1)
+            cell.cryptoChangeLabel.textColor = change < 0 ? ColorUtility.appRed : ColorUtility.appGreen
         } else {
             cell.cryptoChangeLabel.text = Constants.Placeholders.notAvailable
         }
@@ -132,27 +134,25 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     private func styleCell(_ cell: CryptoCell, _ isFavorite: Bool) {
-        cell.containerView.backgroundColor = UIColor(red: 37/255, green: 47/255, blue: 62/255, alpha: 1)
-        cell.nameLabel.font = UIFont(name: "HelveticaNeue", size: 18)
+        cell.containerView.backgroundColor = ColorUtility.containerBackgroundColor
+        cell.nameLabel.font = UIFont(name: Constants.FontName.regular, size: 18)
         cell.nameLabel.textColor = .white
         cell.nameLabel.backgroundColor = .clear
         
-        cell.symbolLabel.font = UIFont(name: "HelveticaNeue", size: 12)
+        cell.symbolLabel.font = UIFont(name: Constants.FontName.regular, size: 12)
         cell.symbolLabel.textColor = .lightGray
         cell.symbolLabel.backgroundColor = .clear
         
-        cell.cryptoPriceLabel.font = UIFont(name: "HelveticaNeue", size: 16)
+        cell.cryptoPriceLabel.font = UIFont(name: Constants.FontName.regular, size: 16)
         cell.cryptoPriceLabel.textColor = .white
         cell.cryptoPriceLabel.backgroundColor = .clear
         
-        cell.cryptoChangeLabel.font = UIFont(name: "HelveticaNeue", size: 18)
+        cell.cryptoChangeLabel.font = UIFont(name: Constants.FontName.regular, size: 18)
         cell.cryptoChangeLabel.backgroundColor = .clear
         
-        cell.cryptoIconImage.layer.cornerRadius = 25
-        cell.cryptoIconImage.layer.masksToBounds = true
         cell.cryptoIconImage.backgroundColor = .clear
         
-        cell.favIconImage.image = UIImage(systemName: "star")
+        cell.favIconImage.image = UIImage(systemName: Constants.ImageName.star)
         cell.favIconImage.tintColor = .systemYellow
         cell.favIconImage.isHidden = !isFavorite
     }
@@ -161,14 +161,14 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
         let coin = viewModel.filteredCoins[indexPath.row]
         let isFavorite = viewModel.favoriteCoins.contains(where: { $0.uuid == coin.uuid })
         
-        let favoriteAction = UIContextualAction(style: .normal, title: isFavorite ? "Unfavorite" : "Favorite") { _, _, completionHandler in
+        let favoriteAction = UIContextualAction(style: .normal, title: isFavorite ? Constants.Labels.unfavorite : Constants.Labels.favorite) { _, _, completionHandler in
             let action = self.viewModel.toggleFavorite(for: coin)
-            Utility.shared.showToast(message: "\(coin.name ?? "Coin") \(action ? "added to" : "removed from") favorites", view: self.view)
+            Utility.shared.showToast(message: "\(coin.name ?? "Coin") \(action ? Constants.Labels.addTo : Constants.Labels.removeFrom)\(Constants.Labels.favorite)", view: self.view)
             tableView.reloadRows(at: [indexPath], with: .automatic)
             completionHandler(true)
         }
         
-        favoriteAction.backgroundColor = isFavorite ? ColorUtility.unfavoriteButtonColor : ColorUtility.favoriteButtonColor
+        favoriteAction.backgroundColor = isFavorite ? ColorUtility.appRed : ColorUtility.favoriteButtonColor
         return UISwipeActionsConfiguration(actions: [favoriteAction])
     }
     
@@ -182,16 +182,11 @@ extension DashboardViewController {
         let coin = viewModel.filteredCoins[indexPath.row]
         let isFavorite = viewModel.favoriteCoins.contains(where: { $0.uuid == coin.uuid })
         
-        let loadingIndicator = UIActivityIndicatorView(style: .large)
-        loadingIndicator.center = self.view.center
-        loadingIndicator.startAnimating()
-        self.view.addSubview(loadingIndicator)
+        Utility.showLoader(on: self.view)
         
         NetworkManager.shared.fetchCoinDetails(uuid: coin.uuid ?? "") { [weak self] result in
             DispatchQueue.main.async {
-                loadingIndicator.stopAnimating()
-                loadingIndicator.removeFromSuperview()
-                
+                Utility.hideLoader()
                 switch result {
                 case .success(let coinDetailsResponse):
                     if let detailsVC = self?.instantiateDetailsViewController(with: coin, isFavorite: isFavorite, coinDetailsResponse: coinDetailsResponse) {
@@ -209,7 +204,7 @@ extension DashboardViewController {
     
     private func instantiateDetailsViewController(with coin: Coin, isFavorite: Bool, coinDetailsResponse: DetailsCryptoCoinDetailsResponse) -> DetailsViewController? {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        if let detailsVC = storyboard.instantiateViewController(identifier: "DetailsViewController") as? DetailsViewController {
+        if let detailsVC = storyboard.instantiateViewController(identifier: Constants.ControllerIdentifier.detailsViewController) as? DetailsViewController {
             detailsVC.coin = coin
             detailsVC.isFavorite = isFavorite
             detailsVC.coinDetails = coinDetailsResponse
@@ -235,3 +230,4 @@ extension DashboardViewController: CryptoViewModelDelegate {
         cryptoTableView.reloadData()
     }
 }
+
