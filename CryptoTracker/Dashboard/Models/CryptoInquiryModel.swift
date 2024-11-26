@@ -63,5 +63,4 @@ struct Stats: Codable {
     }
 }
 
-// MARK: - Encode/decode helpers
 

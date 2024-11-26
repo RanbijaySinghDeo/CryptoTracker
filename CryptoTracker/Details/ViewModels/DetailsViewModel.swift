@@ -27,7 +27,7 @@ class DetailsViewModel {
         self.coin = coin
     }
     
-    func fetchGraphData(for timePeriod: String) {
+    func fetchGraphData(for timePeriod: String, completion: (() -> Void)? = nil) {
         networkService.fetchCoinHistory(uuid: coin.uuid ?? "", timePeriod: timePeriod) { [weak self] result in
             guard let self = self else { return }
             DispatchQueue.main.async {
@@ -43,9 +43,11 @@ class DetailsViewModel {
                 case .failure(let error):
                     self.didEncounterError?(error.localizedDescription)
                 }
+                completion?()
             }
         }
     }
+
     func graphColor() -> UIColor {
         return .systemBlue
     }
