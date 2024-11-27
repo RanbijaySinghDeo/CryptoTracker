@@ -11,8 +11,16 @@ import UIKit
 class DashboardViewController: UIViewController {
     @IBOutlet weak var filterSegment: UISegmentedControl!
     @IBOutlet weak var cryptoTableView: UITableView!
-    private let viewModel = DashboardViewModel()
-    
+    private let viewModel: DashboardViewModel
+
+    init(viewModel: DashboardViewModel) {
+            self.viewModel = viewModel
+            super.init(nibName: nil, bundle: nil)
+        }
+    required init?(coder: NSCoder) {
+            self.viewModel = DashboardViewModel() 
+            super.init(coder: coder)
+        }
     override func viewDidLoad() {
         super.viewDidLoad()
         Utility.showLoader(on: self.cryptoTableView)

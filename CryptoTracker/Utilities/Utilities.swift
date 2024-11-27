@@ -31,7 +31,7 @@ class Utility {
     private init() {}
     private var activityIndicator: UIActivityIndicatorView?
     private static var loaderBackgroundView: UIView?
-
+    
     func showToast(message: String, view: UIView) {
         let toastLabel = PaddedLabel()
         toastLabel.text = message
@@ -63,27 +63,27 @@ class Utility {
     }
     
     static func showLoader(on view: UIView) {
-            if loaderBackgroundView == nil {
-                loaderBackgroundView = UIView(frame: view.bounds)
-                loaderBackgroundView?.backgroundColor = UIColor.black.withAlphaComponent(0.4)
-                let loaderContainer = UIView(frame: CGRect(x: 0, y: 0, width: 120, height: 120))
-                loaderContainer.center = loaderBackgroundView!.center
-                loaderContainer.backgroundColor = .white
-                loaderContainer.layer.cornerRadius = 10
-                loaderContainer.clipsToBounds = true
-                
-                let activityIndicator = UIActivityIndicatorView(style: .large)
-                activityIndicator.color = .gray
-                activityIndicator.center = CGPoint(x: loaderContainer.bounds.midX, y: loaderContainer.bounds.midY)
-                activityIndicator.startAnimating()
-                loaderContainer.addSubview(activityIndicator)
-                loaderBackgroundView?.addSubview(loaderContainer)
-                view.addSubview(loaderBackgroundView!)
-            }
-            loaderBackgroundView?.isHidden = false
-            view.bringSubviewToFront(loaderBackgroundView!)
+        if loaderBackgroundView == nil {
+            loaderBackgroundView = UIView(frame: view.bounds)
+            loaderBackgroundView?.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+            let loaderContainer = UIView(frame: CGRect(x: 0, y: 0, width: 120, height: 120))
+            loaderContainer.center = loaderBackgroundView!.center
+            loaderContainer.backgroundColor = .white
+            loaderContainer.layer.cornerRadius = 10
+            loaderContainer.clipsToBounds = true
+            
+            let activityIndicator = UIActivityIndicatorView(style: .large)
+            activityIndicator.color = .gray
+            activityIndicator.center = CGPoint(x: loaderContainer.bounds.midX, y: loaderContainer.bounds.midY)
+            activityIndicator.startAnimating()
+            loaderContainer.addSubview(activityIndicator)
+            loaderBackgroundView?.addSubview(loaderContainer)
+            view.addSubview(loaderBackgroundView!)
         }
-
+        loaderBackgroundView?.isHidden = false
+        view.bringSubviewToFront(loaderBackgroundView!)
+    }
+    
     static func hideLoader() {
         loaderBackgroundView?.removeFromSuperview()
         loaderBackgroundView = nil
@@ -96,5 +96,66 @@ class Utility {
         }
         alertController.addAction(okAction)
         viewController.present(alertController, animated: true, completion: nil)
+    }
+    // MARK: - Formatting Helpers
+    static func formattedPrice(from price: String?) -> String {
+        guard let price = price, let doublePrice = Double(price) else {
+            return Constants.Placeholders.notAvailable
+        }
+        return String(format: "$%.2f", doublePrice)
+    }
+    
+    static func formattedChange(from change: String?) -> String {
+        guard let change = change, let doubleChange = Double(change) else {
+            return Constants.Placeholders.notAvailable
+        }
+        return "\(String(format: "%.2f", doubleChange))%"
+    }
+    
+    static func changeColor(from change: String?) -> UIColor {
+        guard let change = change, let doubleChange = Double(change) else {
+            return .white
+        }
+        return doubleChange < 0 ? .red : .green
+    }
+    
+    static func formattedSupply(from supply: String?) -> String {
+        guard let supply = supply, let doubleSupply = Double(supply) else {
+            return Constants.Placeholders.notAvailable
+        }
+        return String(format: "%.3f", doubleSupply)
+    }
+    
+    // MARK: - UI Setup Helpers
+    static func setupLabel(_ label: UILabel, font: UIFont, textColor: UIColor) {
+        label.font = font
+        label.textColor = textColor
+    }
+    
+    static func setupSegmentControl(_ segmentControl: UISegmentedControl) {
+        segmentControl.backgroundColor = ColorUtility.detailsBackgroundColor
+        segmentControl.selectedSegmentTintColor = .white
+        segmentControl.setTitleTextAttributes(Constants.FontName.segmentUnselected, for: .normal)
+        segmentControl.setTitleTextAttributes(Constants.FontName.segmentSelected, for: .selected)
+    }
+    
+    static func setupCardView(_ view: UIView) {
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = ColorUtility.detailsCardBackground
+        view.layer.cornerRadius = 12
+        view.layer.masksToBounds = true
+    }
+    
+    static func setupTextView(_ textView: UITextView) {
+        textView.backgroundColor = ColorUtility.detailsCardBackground
+        textView.isEditable = false
+        textView.textColor = .white
+    }
+    private func formattedLinks(from links: [DetailsCryptoLink]?) -> String {
+        guard let links = links else {
+            return Constants.Placeholders.notAvailable
+        }
+        let urls = links.compactMap { $0.url }
+        return urls.isEmpty ? Constants.Placeholders.notAvailable : urls.joined(separator: "\n")
     }
 }

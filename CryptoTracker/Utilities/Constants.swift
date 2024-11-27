@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 
 struct Constants {
@@ -45,6 +46,14 @@ struct Constants {
     struct FontName {
         static let regular = "HelveticaNeue"
         static let bold = "HelveticaNeue-Bold"
+        static let segmentUnselected: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.white,
+            .font: UIFont.systemFont(ofSize: 14)
+        ]
+        static let segmentSelected: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.black,
+            .font: UIFont.boldSystemFont(ofSize: 14)
+        ]
     }
     
     struct ImageName {

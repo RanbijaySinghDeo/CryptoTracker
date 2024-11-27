@@ -9,9 +9,6 @@ import Foundation
 import XCTest
 @testable import CryptoTracker
 
-import XCTest
-@testable import CryptoTracker
-
 class MockDelegate: CryptoViewModelDelegate {
     let callback: () -> Void
     
@@ -90,3 +87,4 @@ class DashboardViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.favoriteCoins.isEmpty)
     }
 }
+

@@ -33,11 +33,7 @@ class DetailsViewModel {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let response):
-                    self.graphData = response.data.history.compactMap { historyItem in
-                        let priceString = historyItem.price
-                        let price = Double(priceString)
-                        return GraphPoint(price: price ?? 0.0, timestamp: historyItem.timestamp)
-                    }
+                    self.graphData = self.mapGraphData(response: response)
                     self.isProfit = Double(response.data.change) ?? 0 > 0
                     self.didUpdateGraphData?()
                 case .failure(let error):
@@ -46,7 +42,20 @@ class DetailsViewModel {
             }
         }
     }
-    func graphColor() -> UIColor {
-        return .systemBlue
+    
+    func graphPoints() -> [Double] {
+        return graphData.map { $0.price }
     }
+
+    func graphColor() -> UIColor {
+        return isProfit ? .green : .red
+    }
+
+    private func mapGraphData(response: CoinHistoryResponse) -> [GraphPoint] {
+        return response.data.history.compactMap { historyItem in
+            guard let price = Double(historyItem.price) else { return nil }
+            return GraphPoint(price: price, timestamp: historyItem.timestamp)
+        }
+    }
+    
 }
