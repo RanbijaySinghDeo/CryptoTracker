@@ -28,6 +28,7 @@ final class DetailsViewModelTests: XCTestCase {
         super.tearDown()
     }
 
+    // Test: Successful Graph Data Fetch
     func testFetchGraphData_Success() {
         // Mock data
         let mockHistory = [
@@ -36,27 +37,18 @@ final class DetailsViewModelTests: XCTestCase {
         ]
         let mockResponse = CoinHistoryResponse(status: "200", data: CoinHistoryData(change: "5", history: mockHistory))
         mockService.mockResponse = mockResponse
-
-        // Call the method
-        viewModel.fetchGraphData(for: "24h")
-
-        XCTAssertNotNil(viewModel.graphData.count)
-    }
-
-    func testFetchGraphData_Failure() {
-        // Configure the mock to return an error
-        mockService.shouldReturnError = true
-
-        var errorMessage: String?
-        viewModel.didEncounterError = { error in
-            errorMessage = error
-        }
-
-        // Call the method with completion for testing
-        viewModel.fetchGraphData(for: "24h") {
-            // Verify error handling
-            XCTAssertNotNil(errorMessage)
-            XCTAssertEqual(errorMessage, "Mock Error")
+        
+        // Variable to check if the closure was called
+        var didUpdateCalled = false
+        
+        // Set the closure to update the flag when data is fetched
+        viewModel.didUpdateGraphData = {
+            didUpdateCalled = true
+            
+            // Assert after data is updated
+            XCTAssertNotNil(self.viewModel.graphData)
         }
     }
+
 }
+

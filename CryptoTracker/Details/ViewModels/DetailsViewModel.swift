@@ -27,28 +27,35 @@ class DetailsViewModel {
         self.coin = coin
     }
     
-    func fetchGraphData(for timePeriod: String, completion: (() -> Void)? = nil) {
+    func fetchGraphData(for timePeriod: String) {
         networkService.fetchCoinHistory(uuid: coin.uuid ?? "", timePeriod: timePeriod) { [weak self] result in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 switch result {
                 case .success(let response):
-                    self.graphData = response.data.history.compactMap { historyItem in
-                        let priceString = historyItem.price
-                        let price = Double(priceString)
-                        return GraphPoint(price: price ?? 0.0, timestamp: historyItem.timestamp)
-                    }
+                    self.graphData = self.mapGraphData(response: response)
                     self.isProfit = Double(response.data.change) ?? 0 > 0
                     self.didUpdateGraphData?()
                 case .failure(let error):
                     self.didEncounterError?(error.localizedDescription)
                 }
-                completion?()
             }
         }
     }
+    
+    func graphPoints() -> [Double] {
+        return graphData.map { $0.price }
+    }
 
     func graphColor() -> UIColor {
-        return .systemBlue
+        return isProfit ? .green : .red
     }
+
+    private func mapGraphData(response: CoinHistoryResponse) -> [GraphPoint] {
+        return response.data.history.compactMap { historyItem in
+            guard let price = Double(historyItem.price) else { return nil }
+            return GraphPoint(price: price, timestamp: historyItem.timestamp)
+        }
+    }
+    
 }
